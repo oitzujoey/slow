@@ -1,0 +1,15 @@
+Either I can use an actual database, or I can write my own. A library is fast and saves me some code, but I'm unsure if I will be able to find one with the type system I want.
+All code is stored as source. Source != source text; Source == AST.
+Typing is strong but dynamic. Assignment is only allowed to occur if the type of the destination matches the source.
+Type checking is done at both compile time and runtime.
+
+Basic data types:
+  function — Always curried.
+  macro — I think I can make these first class. Always curried.
+  number — GMP?
+  sequence — array
+
+A dump of memory is available at any time.
+Execution can be stopped at any time.
+
+
