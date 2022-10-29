@@ -41,7 +41,7 @@ end
 Base.copy(stream::ParseStream) = ParseStream(stream.string, stream.index, stream.length)
 
 struct Sym
-    
+	
 end
 
 Ast = Union{Number,String,Sym,Vector,Nothing}
@@ -65,7 +65,7 @@ end
 function parseWhitespace(stream)
 	startStream = copy(stream)
 	while true
-        lastStream = copy(stream)
+		lastStream = copy(stream)
 		(char, success) = getChar(stream)
 		if !success
 			return ParseResult(nothing, lastStream, true)
@@ -84,7 +84,7 @@ function parseNumber(stream)
 	end
 	number = convert(Number, (digit - '0'))
 	while true
-        lastStream = copy(stream)
+		lastStream = copy(stream)
 		(digit, success) = getChar(stream)
 		if @or(!success, !isdigit(digit))
 			return ParseResult(number, lastStream, true)
@@ -95,15 +95,15 @@ end
 
 function parseSymbol(stream)
 	startStream = copy(stream)
-    specialChars = "()"
-    isSymbolChar(char) = !(isspace(char) || (char in specialChars))
+	specialChars = "()"
+	isSymbolChar(char) = !(isspace(char) || (char in specialChars))
 	(digit, success) = getChar(stream)
 	if @or(!success, !isSymbolChar(digit))
 		return ParseResult(nothing, startStream, false)
 	end
 	number = convert(Number, (digit - '0'))
 	while true
-        lastStream = copy(stream)
+		lastStream = copy(stream)
 		(digit, success) = getChar(stream)
 		if @or(!success, !isdigit(digit))
 			return ParseResult(number, lastStream, true)
@@ -114,33 +114,33 @@ end
 
 function parseList(stream)
 	startStream = copy(stream)
-    # Open parenthesis
+	# Open parenthesis
 	(openParen, success) = getChar(stream)
 	if @or(!success, openParen != '(')
 		return ParseResult(nothing, startStream, false)
 	end
-    list = []
+	list = []
 	while true
-        # White space
-        result = parseWhitespace(stream)
-        stream = result.stream
-        # Close parenthesis
-        lastStream = copy(stream)
-	    (closeParen, success) = getChar(stream)
-	    if !success
-		    return ParseResult(nothing, startStream, false)
-	    end
-	    if closeParen == ')'
-		    return ParseResult(list, stream, true)
-	    end
-        stream = lastStream
-        # Expression
-        result = parseExpression(stream)
+		# White space
+		result = parseWhitespace(stream)
+		stream = result.stream
+		# Close parenthesis
+		lastStream = copy(stream)
+		(closeParen, success) = getChar(stream)
+		if !success
+			return ParseResult(nothing, startStream, false)
+		end
+		if closeParen == ')'
+			return ParseResult(list, stream, true)
+		end
+		stream = lastStream
+		# Expression
+		result = parseExpression(stream)
 		if !result.success
 			return ParseResult(nothing, startStream, false)
 		end
-        append!(list, result.ast)
-        stream = result.stream
+		append!(list, result.ast)
+		stream = result.stream
 	end
 end
 
@@ -149,14 +149,14 @@ function parseExpression(stream)
 	if !result.success
 		return result
 	end
-    parsers = (parseNumber, parseSymbol, parseList)
-    for parser in parsers
-        result = parser(result.stream)
-        if result.success
-            return result
-        end
-    end
-    return result
+	parsers = (parseNumber, parseSymbol, parseList)
+	for parser in parsers
+		result = parser(result.stream)
+		if result.success
+			return result
+		end
+	end
+	return result
 end
 
 function readRepl(str)
